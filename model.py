@@ -3,7 +3,7 @@ from keras.layers.convolutional import Conv2D
 from keras.models import Model, Sequential
 from processor import DataProcessor
 
-NUM_EPOCHS = 2
+NUM_EPOCHS = 15
 
 
 class CNN(object):
@@ -43,6 +43,10 @@ class CNN(object):
         model.add(Flatten())
         model.add(Dropout(0.5))
         model.add(Dense(100))
+        model.add(Dropout(0.5))
+        model.add(Dense(50))
+        model.add(Dropout(0.5))
+        model.add(Dense(10))
         model.add(Dense(1))
         model.compile(loss='mse', optimizer='adam')
         return model

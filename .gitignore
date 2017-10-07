@@ -5,4 +5,4 @@ example_data/
 mac_sim.app
 __pycache__/
 .DS_Store
-
+video/

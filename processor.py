@@ -7,9 +7,6 @@ import numpy as np
 
 # simulator generated data
 DATA_DIR = './data'
-DATA1_DIR = './data1'
-# generated data downloaded from udacity
-EXAMPLE_DATA_DIR = './example_data'
 
 
 class DataProcessor(object):
@@ -22,13 +19,8 @@ class DataProcessor(object):
     @classmethod
     def load(cls):
 
-        samples = []
-        path = os.path.join(EXAMPLE_DATA_DIR, 'driving_log.csv')
-        samples.extend(cls._extract_samples_from_csv(path))
         path = os.path.join(DATA_DIR, 'driving_log.csv')
-        samples.extend(cls._extract_samples_from_csv(path))
-        path = os.path.join(DATA1_DIR, 'driving_log.csv')
-        samples.extend(cls._extract_samples_from_csv(path))
+        samples = cls._extract_samples_from_csv(path)
         shuffle(samples)
 
         train_samples, valid_samples = train_test_split(samples, test_size=0.2)
