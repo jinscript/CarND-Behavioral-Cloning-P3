@@ -7,6 +7,7 @@ import numpy as np
 
 # simulator generated data
 DATA_DIR = './data'
+DATA1_DIR = './data1'
 # generated data downloaded from udacity
 EXAMPLE_DATA_DIR = './example_data'
 
@@ -15,16 +16,18 @@ class DataProcessor(object):
 
     WIDTH = 320
     HEIGHT = 75
-    NUM_CHANNELS = 3
+    NUM_CHANNELS = 1
     BATCH_SIZE = 128
 
     @classmethod
     def load(cls):
 
         samples = []
-        path = os.path.join(DATA_DIR, './driving_log.csv')
+        path = os.path.join(EXAMPLE_DATA_DIR, 'driving_log.csv')
         samples.extend(cls._extract_samples_from_csv(path))
-        path = os.path.join(EXAMPLE_DATA_DIR, './driving_log.csv')
+        path = os.path.join(DATA_DIR, 'driving_log.csv')
+        samples.extend(cls._extract_samples_from_csv(path))
+        path = os.path.join(DATA1_DIR, 'driving_log.csv')
         samples.extend(cls._extract_samples_from_csv(path))
         shuffle(samples)
 
@@ -37,6 +40,8 @@ class DataProcessor(object):
     @classmethod
     def process(cls, image):
         image = image[65:140,:,:]
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        image = np.reshape(image, (cls.HEIGHT, cls.WIDTH, cls.NUM_CHANNELS))
         return image / 255 - 0.5
 
     @classmethod
@@ -50,9 +55,9 @@ class DataProcessor(object):
 
                 images, targets = [], []
                 for sample in batch_samples:
-                    center, left, right, angle, throttle, brake, speed = sample
-                    center_image = cv2.imread(center)
-                    images.append(cls.process(center_image))
+                    image_path, angle = sample
+                    image = cv2.imread(image_path)
+                    images.append(cls.process(image))
                     targets.append(angle)
 
                 yield np.array(images), np.array(targets)
@@ -81,6 +86,13 @@ class DataProcessor(object):
                 dirs.extend(right.split('/')[-2:])
                 right = os.path.join(*dirs)
 
-                lines.append((center, left, right, float(angle), float(throttle),
-                              float(brake), float(speed)))
+                if os.path.exists(center):
+                    lines.append((center, float(angle)))
+                  
+                if os.path.exists(left):
+                    lines.append((left, float(angle) + 0.2))
+                    
+                if os.path.exists(right):
+                    lines.append((right, float(angle) - 0.2))
+
         return lines
