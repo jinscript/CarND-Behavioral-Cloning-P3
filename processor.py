@@ -10,6 +10,9 @@ DATA_DIR = './data'
 
 
 class DataProcessor(object):
+    """
+    Data processor
+    """
 
     WIDTH = 320
     HEIGHT = 75
@@ -18,7 +21,10 @@ class DataProcessor(object):
 
     @classmethod
     def load(cls):
-
+        """
+        Load data from csv and create generators
+        :return: train and validate generators and length of train set and validate set
+        """
         path = os.path.join(DATA_DIR, 'driving_log.csv')
         samples = cls._extract_samples_from_csv(path)
         shuffle(samples)
@@ -31,6 +37,14 @@ class DataProcessor(object):
 
     @classmethod
     def process(cls, image):
+        """
+        Pre-process an image. Techniques used:
+        - Cropping: only keep image segment with road information to reduce noise
+        - Grayscale
+        This methods is used in drive.py as well
+        :param image: image
+        :return:      processed image
+        """
         image = image[65:140,:,:]
         image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         image = np.reshape(image, (cls.HEIGHT, cls.WIDTH, cls.NUM_CHANNELS))
@@ -38,6 +52,13 @@ class DataProcessor(object):
 
     @classmethod
     def _generator(cls, samples, batch_size):
+        """
+        Create generators for data set
+
+        :param samples:    list of image
+        :param batch_size: batch size
+        :return:           a generator
+        """
 
         n_samples = len(samples)
 
@@ -49,6 +70,7 @@ class DataProcessor(object):
                 for sample in batch_samples:
                     image_path, angle = sample
                     image = cv2.imread(image_path)
+                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                     images.append(cls.process(image))
                     targets.append(angle)
 
@@ -56,6 +78,14 @@ class DataProcessor(object):
 
     @classmethod
     def _extract_samples_from_csv(cls, path):
+        """
+        Extract image path and steer angle from csv
+        Add +0.2 for left image
+        Add -0.2 for right image
+        :param path: data dir
+        :return:     a list of (image_path, steer_angle)
+        """
+
         lines = []
         with open(path) as f:
             reader = csv.reader(f)

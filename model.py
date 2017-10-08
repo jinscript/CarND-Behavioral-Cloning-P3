@@ -7,9 +7,13 @@ NUM_EPOCHS = 15
 
 
 class CNN(object):
+    """
+    An implementation of Nvidia deep learning model for self driving.
+    See https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/
+    """
 
     def __init__(self):
-        self.model = self.get_model()
+        self.model = self._get_model()
 
     def fit(self,
             train_generator,
@@ -17,6 +21,16 @@ class CNN(object):
             valid_generator,
             valid_size,
             n_epochs):
+        """
+        Train model with generators
+
+        :param train_generator: train data generator
+        :param train_size:      number of training data points
+        :param valid_generator: validation data generator
+        :param valid_size:      number of validation data points
+        :param n_epochs:        number of epochs
+        :return:                None
+        """
 
         self.model.fit_generator(train_generator,
                                  samples_per_epoch=train_size,
@@ -25,9 +39,19 @@ class CNN(object):
                                  nb_epoch=n_epochs)
 
     def save(self):
+        """
+        Save model as hdf5 file.
+
+        :return: None
+        """
         self.model.save('model.h5')
 
-    def get_model(self):
+    def _get_model(self):
+        """
+        Get model architecture
+
+        :return: keras model object
+        """
 
         input_shape = (DataProcessor.HEIGHT,
                        DataProcessor.WIDTH,
