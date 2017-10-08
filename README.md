@@ -80,4 +80,4 @@ and a validation set containing 20% of the data.
 The implementation is in processor.py.
 
 ### 4. Results
-After 15 epochs, the model has x training loss and y validation loss.
+After 15 epochs, the model has 0.0262 training loss and 0.0235 validation loss.
